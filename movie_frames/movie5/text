@@ -1,0 +1,8 @@
+avconv -framerate 1 -f image2 -i image-%03d.jpeg -b 65536k out.mov
+
+avconv -i frame%03d.png -vb 20M mymovie.mp4
+
+my command:
+
+avconv -framerate 10 -f image2 -i frame%d.png -b 65536k mymovie.mp4
+
