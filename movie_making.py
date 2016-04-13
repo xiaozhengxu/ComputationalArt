@@ -1,5 +1,4 @@
-""" Xiaozheng Xu's code for recursive art generator """
-
+""" Xiaozheng Xu's code for recursive art video frames generator """       
 import random
 import os
 import shutil
@@ -48,14 +47,6 @@ def evaluate_random_function(f, x, y, t):
         >>> evaluate_random_function(["y"],0.1,0.02,0.3)
         0.02
     """
-    # cos_pi(a) = cos(pi*a)
-    # sin_pi(a) = sin(pi*a)
-    # prod(a,b) = ab
-    # avg(a,b) = 0.5*(a+b)
-    # x(a,b) = a
-    # y(a,b) = b
-    # power(a,b)= a**b
-    # min(a,b) = minimum of a and b 
     if f[0]=="x":
         return x
     elif f[0]=="y":
@@ -84,11 +75,6 @@ def evaluate_random_function(f, x, y, t):
         a=evaluate_random_function(f[1],x,y,t)
         b=evaluate_random_function(f[2],x,y,t)
         return min(a,b)
-
-# function=build_random_function(3,5)
-# print function 
-# print evaluate_random_function(function,1,0.2)
-
 
 
 def remap_interval(val,
@@ -162,7 +148,6 @@ def test_image(filename, x_size=350, y_size=350):
 
     im.save('./Softdes/ComputationalArt/movie1/'+filename,'PNG')
 
-# test_image('noise.png')
 
 def generate_art(filename, t, red_function,green_function,blue_function, order, x_size=350, y_size=350):
     """ Generate computational art and save as an image file.
@@ -187,31 +172,24 @@ def generate_art(filename, t, red_function,green_function,blue_function, order, 
     im.save('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order)+'/'+filename)
 
 
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-
 def make_movie(beg,end,function_num,order):
-    # red_function = build_random_function(7, 9)
-    # green_function = build_random_function(7, 9)
-    # blue_function = build_random_function(7, 9)
+    '''This movie makes the frames of a movie from chosen red function, green function and blue function. 
+    beg is the starting frame number, end is the end frame number, and end-beg is the number of frames generated'''
     red_function=red_functions[function_num]
     green_function=green_functions[function_num]
     blue_function=blue_functions[function_num]
-    # f.write('red function'+str(order)+'='+str(red_function)+'\n'*2)
-    # f.write('green function'+str(order)+'='+str(green_function)+'\n'*2)
-    # f.write('blue function'+str(order)+'='+str(blue_function)+'\n'*2)
     for t in range(beg,end): 
         t_remaped=remap_interval(t,beg,end,-1,1)
         file_name='{}{}{}'.format('frame',t,'.png')
         generate_art(file_name,t_remaped,red_function,green_function,blue_function,order)
+
 
 red_functions=[]
 green_functions=[]
 blue_functions=[]
 
 def choose_function(order,num_of_choices):
+    '''Generate movie function candidates for the user to choose from. Order is the movie folder number. '''
     for i in range(num_of_choices):
             red_function = build_random_function(7, 9)
             green_function = build_random_function(7, 9)
@@ -224,71 +202,37 @@ def choose_function(order,num_of_choices):
             generate_art(file_name_i,-1,red_function,green_function,blue_function,order)
             generate_art(file_name_f,1,red_function,green_function,blue_function,order)
 
-order=int(raw_input('Please enter the movie number you want to make: '))
-os.mkdir('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order))
-num_of_choices=int(raw_input('Please enter how many candidate pictures you want to choose from:'))
+def generate_movie():
+    order=int(raw_input('Please enter the movie number you want to make: '))
+    try:
+        os.mkdir('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order))
+    except OSError:
+        pass    
 
-choose_function(order,num_of_choices)
-user_input=raw_input('Please enter the picture you want to make into movie:(1,2,3,4...etc)')
-candidate_nums=user_input.split(',')  
-for i,num in candidate_nums:   #num is a string of an integer 
-    movie_num=int(num)
-    if i>0:
-        os.mkdir('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order+i))
-    make_movie(0,100,movie_num,order+i)
-    for i in range(99):
-        shutil.copyfile('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order+i)+'/frame'+str(i)+'.png',
-         '/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order+i)+'/frame'+str(198-i)+'.png')
+    num_of_choices=int(raw_input('Please enter how many candidate pictures you want to choose from:'))
 
+    choose_function(order,num_of_choices)
+    user_input=raw_input('Please enter the picture you want to make into movie:(1,2,3,4...etc)')
 
+    candidate_nums=user_input.split(',')  
 
+    for i,num in candidate_nums:   #num is a string of an integer 
+        movie_num=int(num)
+        if i>0:
+            try:
+                os.mkdir('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order+i))
+            except OSError:
+                pass
+        make_movie(0,100,movie_num,order+i)
 
-
-
-# shutil.copyfile('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order)+'/mymovie.mp4',
-#      '/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movies/movie'+str(order)+'.mp4')
-
-
-
-
-
+        for i in range(99):
+            shutil.copyfile('/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order+i)+'/frame'+str(i)+'.png',
+             '/home/xiaozheng/Softdes/ComputationalArt/movie_frames/movie'+str(order+i)+'/frame'+str(198-i)+'.png')
 
 
+generate_movie()
 
-
-
-# import matplotlib.animation as animation
-# import numpy as np
-# from pylab import *
-
-
-# dpi = 100
-
-# def ani_frame():
-#     fig = plt.figure()
-#     ax = fig.add_subplot(111)
-#     ax.set_aspect('equal')
-#     ax.get_xaxis().set_visible(False)
-#     ax.get_yaxis().set_visible(False)
-
-#     im = ax.imshow(rand(300,300),cmap='gray',interpolation='nearest')
-#     im.set_clim([0,1])
-#     fig.set_size_inches([5,5])
-
-
-#     tight_layout()
-
-
-#     def update_img(n):
-#         tmp = rand(300,300)
-#         im.set_data(tmp)
-#         return im
-
-#     legend(loc=0)
-#     ani = animation.FuncAnimation(fig,update_img,300,interval=30)
-#     writer = animation.writers['ffmpeg'](fps=30)
-
-#     ani.save('demo.mp4',writer=writer,dpi=dpi)
-#     return ani
-
-# ani_frame()
+#doctest
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
